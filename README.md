@@ -9,3 +9,8 @@ movycat -file <filename> [-width <width> -height <height>]
 ```
 
 Press `ESC` to quit playback anytime.
+
+
+https://github.com/user-attachments/assets/691c25d1-ac8d-4664-9488-5f77b0343183
+
+
