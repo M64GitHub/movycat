@@ -8,3 +8,4 @@ Usage:
 movycat -file <filename> [-width <width> -height <height>]
 ```
 
+Press `ESC` to quit playback anytime.
