@@ -11,6 +11,10 @@
         .movy_video = .{
             .path = "../movy",
         },
+        .flagz = .{
+            .url = "https://github.com/M64GitHub/flagZ/archive/refs/tags/v1.0.0.tar.gz",
+            .hash = "flagz-1.0.0-vdU1bCRQAQD3QOyKf6gAVpJuhTnlOoA10UmxO_XTycHm",
+        },
     },
     .paths = .{
         "build.zig",

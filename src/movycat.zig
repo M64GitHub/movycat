@@ -1,10 +1,21 @@
 const std = @import("std");
 const movy = @import("movy");
 const movy_video = @import("movy_video");
+const flagz = @import("flagz");
+
 const stdout = std.io.getStdOut().writer();
 
-const target_width: usize = 140;
-const target_height: usize = 100;
+var target_width: usize = 140;
+var target_height: usize = 100;
+
+pub fn printUsage() void {
+    stdout.print(
+        \\Usage:
+        \\
+        \\movycat -file <filename> [-width <width> -height <height>]
+        \\
+    , .{}) catch {};
+}
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{
@@ -14,7 +25,34 @@ pub fn main() !void {
     const allocator = gpa.allocator();
     defer _ = gpa.deinit();
 
-    // -- setup movy screen
+    // Parse args
+    const Args = struct {
+        file: []const u8,
+        width: ?usize,
+        height: ?usize,
+    };
+
+    const args = try flagz.parse(Args, allocator);
+    defer flagz.deinit(args, allocator);
+
+    if (args.file.len == 0) {
+        return printUsage();
+    }
+
+    // set size
+
+    const term_dimensions = try movy.terminal.getSize();
+    target_width = term_dimensions.width;
+    target_height = term_dimensions.height * 2 - 2;
+
+    if (args.width) |width| {
+        if (width < target_width) target_width = width;
+    }
+    if (args.height) |height| {
+        if (height < target_height) target_height = height;
+    }
+
+    // -- Setup movy screen
     try movy.terminal.beginRawMode();
     defer movy.terminal.endRawMode();
     try movy.terminal.beginAlternateScreen();
@@ -22,8 +60,8 @@ pub fn main() !void {
 
     var screen = try movy.Screen.init(
         allocator,
-        target_width + 8,
-        target_height / 2 + 4,
+        target_width,
+        target_height / 2,
     );
     defer screen.deinit(allocator);
 
@@ -38,49 +76,42 @@ pub fn main() !void {
     );
     defer surface.deinit(allocator);
 
-    surface.x = 4;
-    surface.y = 4;
+    surface.x = 0;
+    surface.y = 0;
 
     try screen.addRenderSurface(surface);
 
-    // -- Parse args
-    const args = try std.process.argsAlloc(allocator);
-    defer std.process.argsFree(allocator, args);
-
-    if (args.len < 2) {
-        try stdout.print("Error: missing filename\n", .{});
-        return error.MissingFileName;
-    }
-
-    const file_name = args[1];
-    try stdout.print("Working with filename '{s}'\n", .{file_name});
-
-    // -- open movie
+    // -- Open movie
 
     const decoder = try movy_video.VideoDecoder.init(
         allocator,
-        file_name,
+        args.file,
         surface,
     );
     defer decoder.deinit();
 
-    while (try decoder.readFrame()) {
-        // -- ESC to exit
+    // Play!
+    while (true) {
+        // Try reading input every frame
         if (try movy.input.get()) |event| {
             switch (event) {
                 .key => |key| {
                     if (key.type == .Escape) {
                         break;
-                    } else {}
+                    }
                 },
                 else => {},
             }
         }
 
-        screen.render();
-        try screen.output(); // blast to terminal
+        // Perform one decoding step
+        // This plays audio or fills the RenderSurface
+        const result = try decoder.update();
+        if (result.eof) break;
 
-        // frame sync
-        decoder.syncFrame();
+        if (result.video_rendered) {
+            screen.render();
+            try screen.output();
+        }
     }
 }
