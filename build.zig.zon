@@ -1,0 +1,20 @@
+.{
+    .name = .movycat,
+    .version = "0.0.0",
+    .fingerprint = 0x8f152f17b533523f,
+    .minimum_zig_version = "0.14.0",
+
+    .dependencies = .{
+        .movy = .{
+            .path = "../movy",
+        },
+        .movy_video = .{
+            .path = "../movy",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
