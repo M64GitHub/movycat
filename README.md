@@ -25,8 +25,8 @@ https://github.com/user-attachments/assets/e01ab36e-25d4-4228-bf79-36196637f125
 ![image](https://github.com/user-attachments/assets/fcfcb9a5-1b3a-43dc-8c30-15574aeda9fb)
 
 ## Why
-It is just a demo for movy, that simply provides rgba rendersurfaces, ways to manipulate and combine them, and functions to blast them to the terminal. You can render anything on, so why not movie-frames?
+This is just a demo for movy, that basically provides rgba rendersurfaces, ways to manipulate and combine them, and functions to blast them to the terminal. You can render anything on those, so why not movie-frames?
 
 ## ZIG
-**movycat** is entirely written in Zig. 
+**movycat** is entirely written in Zig. This offers us to seamlessly import libffmpeg. And libsdl2. And call it directly from the code. 
 
