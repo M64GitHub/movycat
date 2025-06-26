@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/70f20bd2-fc9b-4fba-a6eb-851fdacab7ce)
+![image](https://github.com/user-attachments/assets/8a3548af-9965-48f9-afc3-c6391a2ef5bb)
 
 # movycat
 **movycat** plays MP4 videos directly in your terminal. It renders the video to ANSI half block characters in full RGB, using the [movy](https://github.com/M64GitHub/movy) rendering engine, and supports synced audio playback using SDL2.
