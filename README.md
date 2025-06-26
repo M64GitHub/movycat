@@ -23,3 +23,10 @@ https://github.com/user-attachments/assets/e01ab36e-25d4-4228-bf79-36196637f125
 ![image](https://github.com/user-attachments/assets/f03fadeb-8812-4bb5-9aca-c94bcd1cdb84)
 
 ![image](https://github.com/user-attachments/assets/fcfcb9a5-1b3a-43dc-8c30-15574aeda9fb)
+
+## Why
+It is just a demo for movy, that simply provides rgba rendersurfaces, ways to manipulate and combine them, and functions to blast them to the terminal. You can render anything on, so why not movie-frames?
+
+## ZIG
+**movycat** is entirely written in Zig. 
+
