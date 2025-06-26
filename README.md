@@ -16,3 +16,5 @@ Press `ESC` to quit playback anytime.
 https://github.com/user-attachments/assets/e01ab36e-25d4-4228-bf79-36196637f125
 
 (part of the 64k Demo "Universal Sequence" from the amazing demo group "Conspiracy")
+
+![image](https://github.com/user-attachments/assets/f03fadeb-8812-4bb5-9aca-c94bcd1cdb84)
