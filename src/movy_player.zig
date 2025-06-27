@@ -9,6 +9,9 @@ pub const PlayerState = struct {
     pause_start_ns: i128 = 0,
     total_paused_ns: i128 = 0,
 
+    frame_ctr: usize = 0,
+    pkt_ctr: usize = 0,
+
     pub fn togglePause(
         self: *PlayerState,
         decoder: *movy_video.VideoDecoder,

@@ -134,26 +134,29 @@ pub fn main() !void {
                 const audio_i64 = @as(i64, @intCast(playback_time_ns));
                 const diff = head_pts_i64 - audio_i64;
 
-                decoder.video.pkt_ctr += 1;
+                state.pkt_ctr += 1;
 
                 if (diff <= SYNC_WINDOW_NS and diff >= -SYNC_WINDOW_NS) {
                     if (decoder.video.popFrame()) |frame_ptr| {
-                        decoder.video.frame_ctr += 1;
+                        state.frame_ctr += 1;
 
                         const t_before = std.time.nanoTimestamp();
                         decoder.video.renderFrameToSurface(frame_ptr, surface);
                         const t_after = std.time.nanoTimestamp();
                         const render_ns = t_after - t_before;
 
-                        if (render_ns > 10_000_000) {
-                            std.debug.print("Decoding frame took {} ns\n", .{render_ns});
+                        if (render_ns > 15_000_000) {
+                            std.debug.print(
+                                "Scaling / rendering frame took {} ns\n",
+                                .{render_ns},
+                            );
                             return error.ScalingTooSlow;
                         }
 
+                        movy_video.VideoDecoder.freeAVFrame(frame_ptr);
+
                         screen.render();
                         try screen.output();
-
-                        movy_video.VideoDecoder.freeAVFrame(frame_ptr);
                     }
                 } else if (diff < -SYNC_WINDOW_NS) {
                     // Video is behind – drop the frame!
@@ -166,9 +169,12 @@ pub fn main() !void {
         }
 
         // THEN: Decode only if queue is not full
-        if (decoder.video.queue_count < movy_video.MAX_VIDEO_FRAMES) {
+        if (decoder.video.queue_count < movy_video.VideoState.MAX_VIDEO_FRAMES) {
             const playback_time_ns = decoder.getAudioClock();
-            switch (try decoder.processNextPacket(SYNC_WINDOW_NS, playback_time_ns)) {
+            switch (try decoder.processNextPacket(
+                SYNC_WINDOW_NS,
+                playback_time_ns,
+            )) {
                 .eof => reached_end = true,
                 else => {}, // any outcome advances state
             }
