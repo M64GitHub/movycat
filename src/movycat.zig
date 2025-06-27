@@ -4,6 +4,11 @@ const movy_video = @import("movy_video");
 const player = @import("movy_player.zig");
 const flagz = @import("flagz");
 
+// SDL2 for audio
+const SDL = @cImport({
+    @cInclude("SDL2/SDL.h");
+});
+
 const stdout = std.io.getStdOut().writer();
 
 var target_width: usize = undefined;
@@ -44,6 +49,12 @@ pub fn main() !void {
     if (args.file.len == 0) {
         return printUsage();
     }
+
+    // -- init Audio
+
+    // init SDL audio
+    if (SDL.SDL_Init(SDL.SDL_INIT_AUDIO) != 0) return error.SDLInitFailed;
+    defer SDL.SDL_Quit();
 
     // -- Set output dimensions
 
