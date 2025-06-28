@@ -39,18 +39,23 @@ pub const PlayerController = struct {
             self.playback_state = .paused;
         }
 
-        if (decoder.audio) |*a| {
-            if (self.isPaused()) {
-                // Pause audio and measure pause time
-                self.pause_start_ns = decoder.getPlaybackClock();
-                a.pauseAudioPlayback(true);
-            } else {
-                // Continue audio and update clocks for av sync
-                const pause_end_ns = decoder.getPlaybackClock();
-                self.total_paused_ns += pause_end_ns - self.pause_start_ns;
+        if (self.isPaused()) {
+            // Pause audio and measure pause time
+            self.pause_start_ns = decoder.getPlaybackClock();
 
-                decoder.video.start_time_ns +=
-                    pause_end_ns - self.pause_start_ns;
+            if (decoder.audio) |*a| {
+                a.pauseAudioPlayback(true);
+            }
+        } else {
+            // Continue audio and update clocks for av sync
+            const pause_end_ns = decoder.getPlaybackClock();
+            self.total_paused_ns += pause_end_ns - self.pause_start_ns;
+
+            decoder.video.start_time_ns +=
+                pause_end_ns - self.pause_start_ns;
+            decoder.clock_start_ns +=
+                pause_end_ns - self.pause_start_ns;
+            if (decoder.audio) |*a| {
                 a.start_time_ns += pause_end_ns - self.pause_start_ns;
 
                 a.pauseAudioPlayback(false);
