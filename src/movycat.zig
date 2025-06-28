@@ -14,7 +14,7 @@ const stdout = std.io.getStdOut().writer();
 var target_width: usize = undefined;
 var target_height: usize = undefined;
 
-const SYNC_WINDOW_NS: i64 = 50_000_000;
+const SYNC_WINDOW_NS: i64 = 10_000_000;
 
 pub fn printUsage() void {
     stdout.print(
@@ -111,28 +111,45 @@ pub fn main() !void {
         try movy_video.VideoDecoder.init(allocator, args.file, surface);
     defer decoder.deinit(allocator);
 
+    if (decoder.audio) |*a| {
+        a.pauseAudioPlayback(false);
+    }
+
     var reached_end = false;
     var loop_ctr: usize = 0;
 
-    var state = player.PlayerState{};
+    var controller = player.PlayerController{};
 
-    while (!state.stop) {
+    controller.play();
+
+    while (!controller.isStopped()) {
         loop_ctr += 1;
 
         // esc input only works with raw terminal mode
         if (try movy.input.get()) |event| {
             if (event == .key and event.key.type == .Escape) {
-                state.stop = true;
+                controller.stop();
             }
             // Outta Space
             if (event == .key and event.key.type == .Char and
                 event.key.sequence[0] == ' ')
             {
-                state.togglePause(decoder);
+                controller.togglePause(decoder);
+            }
+            // NEW: skimminnnnnng!
+            if (event == .key and event.key.type == .Right) {
+                // fast forward +5s
+                try controller.skipTime(decoder, 5 * std.time.ns_per_s);
+            }
+
+            if (event == .key and event.key.type == .Left) {
+                // fast backward -5s
+                // all the way back to the beginning if so
+                try controller.skipTime(decoder, -5 * std.time.ns_per_s);
             }
         }
 
-        if (state.paused) {
+        if (controller.isPaused()) {
             std.time.sleep(10_000_000);
             continue;
         }
@@ -140,16 +157,16 @@ pub fn main() !void {
         // FIRST: Chck if a frame is ready to render (even before decoding more)
         if (decoder.video.queue_count > 0) {
             if (decoder.video.peekFrame()) |head| {
-                const playback_time_ns = decoder.getAudioClock();
+                const playback_time_ns = decoder.getPlaybackClock();
                 const head_pts_i64 = @as(i64, @intCast(head.pts_ns));
                 const audio_i64 = @as(i64, @intCast(playback_time_ns));
                 const diff = head_pts_i64 - audio_i64;
 
-                state.pkt_ctr += 1;
+                controller.pkt_ctr += 1;
 
                 if (diff <= SYNC_WINDOW_NS and diff >= -SYNC_WINDOW_NS) {
                     if (decoder.video.popFrame()) |frame_ptr| {
-                        state.frame_ctr += 1;
+                        controller.frame_ctr += 1;
 
                         const t_before = std.time.nanoTimestamp();
                         decoder.video.renderFrameToSurface(frame_ptr, surface);
@@ -157,6 +174,7 @@ pub fn main() !void {
                         const render_ns = t_after - t_before;
 
                         if (render_ns > 15_000_000) {
+                            movy.terminal.setColor(movy.color.WHITE);
                             std.debug.print(
                                 "Scaling / rendering frame took {} ns\n",
                                 .{render_ns},
@@ -181,10 +199,11 @@ pub fn main() !void {
 
         // THEN: Decode only if queue is not full
         if (decoder.video.queue_count < movy_video.VideoState.MAX_VIDEO_FRAMES) {
-            const playback_time_ns = decoder.getAudioClock();
+            const playback_time_ns = decoder.getPlaybackClock();
             switch (try decoder.processNextPacket(
                 SYNC_WINDOW_NS,
                 playback_time_ns,
+                false,
             )) {
                 .eof => reached_end = true,
                 else => {}, // any outcome advances state
@@ -193,7 +212,7 @@ pub fn main() !void {
 
         // All frames processed
         if (decoder.video.queue_count == 0 and reached_end) {
-            state.stop = true;
+            controller.stop();
         }
 
         std.time.sleep(1_000); // bit of breathing space for the cpu
