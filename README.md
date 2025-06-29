@@ -8,7 +8,21 @@ It supports all formats that ffmpeg can decode — including `.mp4`, `.h264`, `.
 
 ```bash
 Usage:
-movycat -file <filename> [-width <width> -height <height>]
+movycat -f|-file <filename> 
+        [-w|-width <width>]
+        [-h |-height <height>]
+        [-a] 
+movycat -help
+Options:
+       -f ............ File to play
+       -w, -h ........ Optional: dimensions of video output in pixels.
+                       The resulting output size always preserves the 
+                       aspect ratio, and is truncated to the terminal
+                       size.
+       -a ............ Optional: show video on alternate screen.
+                       This preserves your current terminal state.
+       -help ......... Help. Show this help along with the movycat
+                       logo.
 ```
 
 - Press `ESC` to quit.
