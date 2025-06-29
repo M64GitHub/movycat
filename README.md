@@ -4,22 +4,25 @@
 
 **movycat** plays videos directly in your terminal. It renders the video to ANSI half block characters in full RGB, using the [movy](https://github.com/M64GitHub/movy) rendering engine, and supports synced audio playback using SDL2.
 
-All formats that ffmpeg can decode are supported. This includes h64, mp4, avi, mkv, webm files, ...
+It supports all formats that ffmpeg can decode — including `.mp4`, `.h264`, `.avi`, `.mkv`, `.webm`, and more.  
 
 ```bash
 Usage:
 movycat -file <filename> [-width <width> -height <height>]
 ```
 
-Press `ESC` to quit playback anytime.
+- Press `ESC` to quit.
 
-Press `SPACE` to pause.
+- Press `SPACE` to pause.
 
-Press `CURSOR RIGHT` to skip forward 5 seconds.
+- Press `CURSOR RIGHT` to skip forward 5 seconds.
 
-Press `CURSOR LEFT` to skip backwards 5 seconds.
+- Press `CURSOR LEFT` to skip backwards 5 seconds.
 
-Of course you can use vim keys instead of the cursor keys! `l` to skip forwards, and `h` to skip backwards 5 seconds.
+- Of course you can use vim keys instead of the cursor keys!  
+  `l` to skip forwards, and `h` to skip backwards 5 seconds.
+
+- Press `i` to toggle the info overlay.
 
 https://github.com/user-attachments/assets/e01ab36e-25d4-4228-bf79-36196637f125
 
@@ -33,5 +36,21 @@ https://github.com/user-attachments/assets/e01ab36e-25d4-4228-bf79-36196637f125
 Real terminal hackers do everything in the terminal. This includes watching videos. Besides that, this is just a demo for movy. movy basically provides rgba rendersurfaces, ways to manipulate and combine them, apply effects, and functions to blast them to the terminal. You can render anything on those, so why not video-frames?
 
 ## ZIG
-**movycat** is entirely written in Zig. This offers us to seamlessly import libffmpeg. And libsdl2. And call it directly from the code. 
+**movycat** is entirely written in Zig. This offers us to seamlessly import libffmpeg. And libsdl2. And call it directly from the code.
 
+## Requirements
+
+  - FFmpeg (shared libraries)
+  - SDL2
+  - Zig 0.14.0 or newer
+
+For example on Ubuntu, run:
+```bash
+sudo apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libswresample-dev libsdl2-dev
+```
+
+## Build
+
+```bash
+zig build -Drelease-fast
+```
