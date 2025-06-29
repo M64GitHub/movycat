@@ -4,7 +4,7 @@
 
 **movycat** plays videos directly in your terminal. It renders the video to ANSI half block characters in full RGB, using the [movy](https://github.com/M64GitHub/movy) rendering engine, and supports synced audio playback using SDL2.
 
-All formats that ffmpeg can decode are supported. This includes h64, mp4, avi, mkv, ...
+All formats that ffmpeg can decode are supported. This includes h64, mp4, avi, mkv, webm files, ...
 
 ```bash
 Usage:
