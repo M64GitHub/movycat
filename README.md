@@ -4,7 +4,7 @@
 
 **movycat** plays videos directly in your terminal. It renders the video to ANSI half block characters in full RGB, using the [movy](https://github.com/M64GitHub/movy) rendering engine, and supports synced audio playback using SDL2.
 
-All formats that ffmpeg can decode are supported. This includes h64, mp4, avi, mkv, ...
+All formats that ffmpeg can decode are supported. This includes h64, mp4, avi, mkv, webm files, ...
 
 ```bash
 Usage:
@@ -19,6 +19,8 @@ Press `CURSOR RIGHT` to skip forward 5 seconds.
 
 Press `CURSOR LEFT` to skip backwards 5 seconds.
 
+Of course you can use vim keys instead of the cursor keys! `l` to skip forwards, and `h` to skip backwards 5 seconds.
+
 https://github.com/user-attachments/assets/e01ab36e-25d4-4228-bf79-36196637f125
 
 (part of the 64k Demo "Universal Sequence" from the amazing demo group "Conspiracy")
@@ -27,8 +29,8 @@ https://github.com/user-attachments/assets/e01ab36e-25d4-4228-bf79-36196637f125
 
 ![image](https://github.com/user-attachments/assets/fcfcb9a5-1b3a-43dc-8c30-15574aeda9fb)
 
-## Why
-This is just a demo for movy, that basically provides rgba rendersurfaces, ways to manipulate and combine them, and functions to blast them to the terminal. You can render anything on those, so why not movie-frames?
+## Why on earth ... ?
+Real terminal hackers do everything in the terminal. This includes watching videos. Besides that, this is just a demo for movy. movy basically provides rgba rendersurfaces, ways to manipulate and combine them, apply effects, and functions to blast them to the terminal. You can render anything on those, so why not video-frames?
 
 ## ZIG
 **movycat** is entirely written in Zig. This offers us to seamlessly import libffmpeg. And libsdl2. And call it directly from the code. 
