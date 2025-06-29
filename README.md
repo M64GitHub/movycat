@@ -6,7 +6,7 @@
 
 It supports all formats that ffmpeg can decode — including `.mp4`, `.h264`, `.avi`, `.mkv`, `.webm`, and more.  
 
-```bash
+```
 Usage:
 movycat -f|-file <filename> 
         [-w|-width <width>]
