@@ -11,8 +11,10 @@ Usage:
 movycat -f|-file <filename> 
         [-w|-width <width>]
         [-h |-height <height>]
-        [-a] 
+        [-a]
+
 movycat -help
+
 Options:
        -f ............ File to play
        -w, -h ........ Optional: dimensions of video output in pixels.
