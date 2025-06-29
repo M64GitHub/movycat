@@ -20,9 +20,26 @@ pub fn printUsage() void {
     stdout.print(
         \\Usage:
         \\
-        \\movycat -file <filename> 
-        \\        [-s <startframe>] 
-        \\        [-width <width> -height <height>]
+        \\movycat -f|-file <filename> 
+        \\        [-w|-width <width>]
+        \\        [-h |-height <height>]
+        \\        [-a] 
+        \\
+        \\movycat -help
+        \\
+        \\Options:
+        \\       -f ............ File to play
+        \\
+        \\       -w, -h ........ Optional: dimensions of video output in pixels.
+        \\                       The resulting output size always preserves the 
+        \\                       aspect ratio, and is truncated to the terminal
+        \\                       size.
+        \\
+        \\       -a ............ Optional: show video on alternate screen.
+        \\                       This preserves your current terminal state.
+        \\
+        \\       -help ......... Help. Show this help along with the movycat
+        \\                       logo.
         \\
     , .{}) catch {};
 }
@@ -40,13 +57,20 @@ pub fn main() !void {
         file: []const u8,
         width: ?usize,
         height: ?usize,
-        s: ?usize,
+        help: bool,
+        a: bool,
     };
 
-    const args = try flagz.parse(Args, allocator);
+    const args = flagz.parse(Args, allocator) catch {
+        return printUsage();
+    };
     defer flagz.deinit(args, allocator);
 
     if (args.file.len == 0) {
+        return printUsage();
+    }
+
+    if (args.help) {
         return printUsage();
     }
 
@@ -56,8 +80,7 @@ pub fn main() !void {
     if (SDL.SDL_Init(SDL.SDL_INIT_AUDIO) != 0) return error.SDLInitFailed;
     defer SDL.SDL_Quit();
 
-    // -- Set output dimensions
-    // init to screen dimensions
+    // -- Init output dimensions to screen dimensions
     const term_dimensions = try movy.terminal.getSize();
     target_width = term_dimensions.width;
     target_height = term_dimensions.height * 2 - 2;
@@ -70,11 +93,6 @@ pub fn main() !void {
         if (height < target_height) target_height = height;
     }
 
-    var start_frame: usize = 0;
-    if (args.s) |s| {
-        start_frame = s;
-    }
-
     // -- Initialize the decoder
     const decoder =
         try movy_video.VideoDecoder.init(allocator, args.file);
@@ -84,13 +102,16 @@ pub fn main() !void {
         a.pauseAudioPlayback(false);
     }
 
-    // -- Get video dimensions, setup scaling
+    // -- Get video dimensions, resize and setup scaling
     const vid_w = decoder.getVideoDimensions().w;
     const vid_h = decoder.getVideoDimensions().h;
 
     const resized = try resize(vid_w, vid_h, target_width, target_height);
     target_width = resized.w;
     target_height = resized.h;
+
+    if (target_width < 20) target_width = 20;
+    if (target_height < 20) target_height = 20;
 
     try decoder.video.setDimensions(allocator, target_width, target_height);
 
@@ -99,8 +120,7 @@ pub fn main() !void {
     defer movy.terminal.endRawMode();
 
     // Looks cooler, when last video frame stays on screen, on exit
-    // try movy.terminal.beginAlternateScreen();
-    // defer movy.terminal.endAlternateScreen();
+    if (args.a) try movy.terminal.beginAlternateScreen();
 
     var screen = try movy.Screen.init(
         allocator,
@@ -132,6 +152,8 @@ pub fn main() !void {
     var controller = player.PlayerController{};
 
     controller.play();
+
+    var info_display_on = true;
 
     while (!controller.isStopped()) {
         loop_ctr += 1;
@@ -165,6 +187,13 @@ pub fn main() !void {
                 event.key.sequence[0] == 'h')
             {
                 try controller.skipTime(decoder, -5 * std.time.ns_per_s);
+            }
+            // info toggle
+            if (event == .key and event.key.type == .Char and
+                event.key.sequence[0] == 'i')
+            {
+                info_display_on = !info_display_on;
+                if (!info_display_on) clearStats(surface);
             }
         }
 
@@ -201,7 +230,8 @@ pub fn main() !void {
                             return error.ScalingTooSlow;
                         }
 
-                        try renderStats(allocator, decoder, surface);
+                        if (info_display_on)
+                            try renderStats(allocator, decoder, surface);
 
                         movy_video.VideoDecoder.freeAVFrame(frame_ptr);
 
@@ -238,6 +268,8 @@ pub fn main() !void {
 
         std.time.sleep(1_000); // bit of breathing space for the cpu
     }
+
+    if (args.a) movy.terminal.endAlternateScreen();
 
     // The End
 }
@@ -279,6 +311,13 @@ fn renderStats(
         .{ time_str, total_str, percent },
     );
 
+    if (stat_str.len + 2 > surface.w) {
+        allocator.free(time_str);
+        allocator.free(total_str);
+        allocator.free(stat_str);
+        return;
+    }
+
     const x = surface.w - stat_str.len - 1;
     const y = surface.h / 2 - 1;
 
@@ -293,4 +332,8 @@ fn renderStats(
     allocator.free(time_str);
     allocator.free(total_str);
     allocator.free(stat_str);
+}
+
+fn clearStats(surface: *movy.RenderSurface) void {
+    surface.clearColored(movy.color.BLACK);
 }

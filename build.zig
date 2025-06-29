@@ -7,11 +7,9 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = std.builtin.OptimizeMode.Debug;
 
-    const dep_movy = b.dependency("movy", .{});
+    const dep_movy = b.dependency("movy", .{ .video = true });
     const mod_movy = dep_movy.module("movy");
-
-    const dep_movy_video = b.dependency("movy_video", .{});
-    const mod_movy_video = dep_movy_video.module("movy_video");
+    const mod_movy_video = dep_movy.module("movy_video");
 
     const dep_flagz = b.dependency("flagz", .{});
     const mod_flagz = dep_flagz.module("flagz");
