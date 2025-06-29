@@ -44,6 +44,11 @@ Real terminal hackers do everything in the terminal. This includes watching vide
   - SDL2
   - Zig 0.14.0 or newer
 
+For example on Ubuntu, run:
+```bash
+sudo apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libswresample-dev libsdl2-dev
+```
+
 ## Build
 
 ```bash
