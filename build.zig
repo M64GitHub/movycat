@@ -5,7 +5,7 @@ const usr_include_path = "/usr/include/";
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
-    const optimize = std.builtin.OptimizeMode.ReleaseFast;
+    const optimize = std.builtin.OptimizeMode.Debug;
 
     const dep_movy = b.dependency("movy", .{});
     const mod_movy = dep_movy.module("movy");

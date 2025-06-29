@@ -92,13 +92,17 @@ pub const PlayerController = struct {
         decoder: *movy_video.VideoDecoder,
         offset_ns: i64,
     ) !void {
+        if (self.isPaused()) return;
+
         const current_pos: i64 =
             @intCast(std.time.nanoTimestamp() - decoder.clock_start_ns);
         const requested_pos = @max(current_pos + offset_ns, 0);
 
+        if (requested_pos >= decoder.video.fmt_ctx.duration * 1000) return;
+
         // Perform seeking
         if (offset_ns < 0) {
-            const safe_seek_pos = @max(requested_pos - 5_000_000_000, 0);
+            const safe_seek_pos = @max(requested_pos - @as(i64, 5_000_000_000), 0);
             try decoder.seekToTimestamp(safe_seek_pos, .backward);
         } else {
             try decoder.seekToTimestamp(requested_pos, .forward);

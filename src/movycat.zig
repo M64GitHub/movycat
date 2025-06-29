@@ -14,7 +14,7 @@ const stdout = std.io.getStdOut().writer();
 var target_width: usize = undefined;
 var target_height: usize = undefined;
 
-const SYNC_WINDOW_NS: i64 = 10_000_000;
+var SYNC_WINDOW_NS: i64 = 10_000_000;
 
 pub fn printUsage() void {
     stdout.print(
@@ -57,11 +57,12 @@ pub fn main() !void {
     defer SDL.SDL_Quit();
 
     // -- Set output dimensions
-
+    // init to screen dimensions
     const term_dimensions = try movy.terminal.getSize();
     target_width = term_dimensions.width;
     target_height = term_dimensions.height * 2 - 2;
 
+    // override with cmdline parameters
     if (args.width) |width| {
         if (width < target_width) target_width = width;
     }
@@ -73,6 +74,25 @@ pub fn main() !void {
     if (args.s) |s| {
         start_frame = s;
     }
+
+    // -- Initialize the decoder
+    const decoder =
+        try movy_video.VideoDecoder.init(allocator, args.file);
+    defer decoder.deinit(allocator);
+
+    if (decoder.audio) |*a| {
+        a.pauseAudioPlayback(false);
+    }
+
+    // -- Get video dimensions, setup scaling
+    const vid_w = decoder.getVideoDimensions().w;
+    const vid_h = decoder.getVideoDimensions().h;
+
+    const resized = try resize(vid_w, vid_h, target_width, target_height);
+    target_width = resized.w;
+    target_height = resized.h;
+
+    try decoder.video.setDimensions(allocator, target_width, target_height);
 
     // -- Setup movy screen
     try movy.terminal.beginRawMode();
@@ -91,7 +111,7 @@ pub fn main() !void {
 
     screen.setScreenMode(movy.Screen.Mode.bgcolor);
 
-    // -- init render surface for output, and add to screen
+    // -- Init render surface for output, and add to screen
     var surface = try movy.RenderSurface.init(
         allocator,
         target_width,
@@ -105,15 +125,6 @@ pub fn main() !void {
     surface.y = 0;
 
     try screen.addRenderSurface(surface);
-
-    // -- Initialize the decoder
-    const decoder =
-        try movy_video.VideoDecoder.init(allocator, args.file, surface);
-    defer decoder.deinit(allocator);
-
-    if (decoder.audio) |*a| {
-        a.pauseAudioPlayback(false);
-    }
 
     var reached_end = false;
     var loop_ctr: usize = 0;
@@ -136,15 +147,23 @@ pub fn main() !void {
             {
                 controller.togglePause(decoder);
             }
-            // NEW: skimminnnnnng!
+            // fast forward +5s
             if (event == .key and event.key.type == .Right) {
-                // fast forward +5s
                 try controller.skipTime(decoder, 5 * std.time.ns_per_s);
             }
-
+            // fast backward +5s
             if (event == .key and event.key.type == .Left) {
-                // fast backward -5s
-                // all the way back to the beginning if so
+                try controller.skipTime(decoder, -5 * std.time.ns_per_s);
+            }
+            // vim style
+            if (event == .key and event.key.type == .Char and
+                event.key.sequence[0] == 'l')
+            {
+                try controller.skipTime(decoder, 5 * std.time.ns_per_s);
+            }
+            if (event == .key and event.key.type == .Char and
+                event.key.sequence[0] == 'h')
+            {
                 try controller.skipTime(decoder, -5 * std.time.ns_per_s);
             }
         }
@@ -173,7 +192,7 @@ pub fn main() !void {
                         const t_after = std.time.nanoTimestamp();
                         const render_ns = t_after - t_before;
 
-                        if (render_ns > 15_000_000) {
+                        if (render_ns > 20_000_000) {
                             movy.terminal.setColor(movy.color.WHITE);
                             std.debug.print(
                                 "Scaling / rendering frame took {} ns\n",
@@ -181,6 +200,8 @@ pub fn main() !void {
                             );
                             return error.ScalingTooSlow;
                         }
+
+                        try renderStats(allocator, decoder, surface);
 
                         movy_video.VideoDecoder.freeAVFrame(frame_ptr);
 
@@ -219,4 +240,57 @@ pub fn main() !void {
     }
 
     // The End
+}
+
+fn resize(vid_w: usize, vid_h: usize, scrn_w: usize, scrn_h: usize) !struct {
+    w: usize,
+    h: usize,
+} {
+    const ratio = @as(f64, @floatFromInt(vid_w)) /
+        @as(f64, @floatFromInt(vid_h));
+
+    // Try to fit by width
+    const new_h_f = @as(f64, @floatFromInt(scrn_w)) / ratio;
+    const new_h = @as(usize, @intFromFloat(new_h_f));
+    if (new_h <= scrn_h)
+        return .{ .w = scrn_w, .h = new_h };
+
+    // Else, fit by height
+    const new_w_f = @as(f64, @floatFromInt(scrn_h)) * ratio;
+    const new_w = @as(usize, @intFromFloat(new_w_f));
+    if (new_w <= scrn_w)
+        return .{ .w = new_w, .h = scrn_h };
+
+    return error.ResizeError;
+}
+
+fn renderStats(
+    allocator: std.mem.Allocator,
+    decoder: *movy_video.VideoDecoder,
+    surface: *movy.RenderSurface,
+) !void {
+    const time_str = try decoder.getPlaybackTimestampStr(allocator);
+    const total_str = try decoder.getTotalDurationStr(allocator);
+    const percent = decoder.getPlaybackProgressPercent();
+
+    const stat_str = try std.fmt.allocPrint(
+        allocator,
+        " {s} ({s}) | {d}% ",
+        .{ time_str, total_str, percent },
+    );
+
+    const x = surface.w - stat_str.len - 1;
+    const y = surface.h / 2 - 1;
+
+    _ = surface.putStrXY(
+        stat_str,
+        x,
+        y,
+        movy.color.LIGHT_GRAY,
+        movy.color.DARKER_GRAY,
+    );
+
+    allocator.free(time_str);
+    allocator.free(total_str);
+    allocator.free(stat_str);
 }
