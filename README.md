@@ -19,7 +19,7 @@ movycat -file <filename> [-width <width> -height <height>]
 
 - Press `CURSOR LEFT` to skip backwards 5 seconds.
 
-- Of course you can use vim keys instead of the cursor keys!
+- Of course you can use vim keys instead of the cursor keys!  
   `l` to skip forwards, and `h` to skip backwards 5 seconds.
 
 - Press `i` to toggle the info overlay
