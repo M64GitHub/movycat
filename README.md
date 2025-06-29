@@ -8,6 +8,7 @@ It supports all formats that ffmpeg can decode — including `.mp4`, `.h264`, `.
 
 ```
 Usage:
+
 movycat -f|-file <filename> 
         [-w|-width <width>]
         [-h |-height <height>]
