@@ -9,40 +9,14 @@ const SDL = @cImport({
     @cInclude("SDL2/SDL.h");
 });
 
+pub const movycat_logo_png: []const u8 = @embedFile("movycat_64.png");
+
 const stdout = std.io.getStdOut().writer();
 
 var target_width: usize = undefined;
 var target_height: usize = undefined;
 
 var SYNC_WINDOW_NS: i64 = 10_000_000;
-
-pub fn printUsage() void {
-    stdout.print(
-        \\Usage:
-        \\
-        \\movycat -f|-file <filename> 
-        \\        [-w|-width <width>]
-        \\        [-h |-height <height>]
-        \\        [-a] 
-        \\
-        \\movycat -help
-        \\
-        \\Options:
-        \\       -f ............ File to play
-        \\
-        \\       -w, -h ........ Optional: dimensions of video output in pixels.
-        \\                       The resulting output size always preserves the 
-        \\                       aspect ratio, and is truncated to the terminal
-        \\                       size.
-        \\
-        \\       -a ............ Optional: show video on alternate screen.
-        \\                       This preserves your current terminal state.
-        \\
-        \\       -help ......... Help. Show this help along with the movycat
-        \\                       logo.
-        \\
-    , .{}) catch {};
-}
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{
@@ -62,16 +36,16 @@ pub fn main() !void {
     };
 
     const args = flagz.parse(Args, allocator) catch {
-        return printUsage();
+        return try printUsage(allocator);
     };
     defer flagz.deinit(args, allocator);
 
     if (args.file.len == 0) {
-        return printUsage();
+        return try printUsage(allocator);
     }
 
     if (args.help) {
-        return printUsage();
+        return try printUsage(allocator);
     }
 
     // -- init Audio
@@ -336,4 +310,39 @@ fn renderStats(
 
 fn clearStats(surface: *movy.RenderSurface) void {
     surface.clearColored(movy.color.BLACK);
+}
+
+pub fn printUsage(allocator: std.mem.Allocator) !void {
+    const surface = try movy.RenderSurface.createFromPngData(allocator, movycat_logo_png);
+    defer surface.deinit(allocator);
+
+    try surface.print();
+
+    movy.terminal.resetColor();
+
+    try stdout.print(
+        \\Usage:
+        \\
+        \\movycat -f|-file <filename> 
+        \\        [-w|-width <width>]
+        \\        [-h |-height <height>]
+        \\        [-a] 
+        \\
+        \\movycat -help
+        \\
+        \\Options:
+        \\       -f ............ File to play
+        \\
+        \\       -w, -h ........ Optional: dimensions of video output in pixels.
+        \\                       The resulting output size always preserves the 
+        \\                       aspect ratio, and is truncated to the terminal
+        \\                       size.
+        \\
+        \\       -a ............ Optional: show video on alternate screen.
+        \\                       This preserves your current terminal state.
+        \\
+        \\       -help ......... Help. Show this help along with the movycat
+        \\                       logo.
+        \\
+    , .{});
 }
