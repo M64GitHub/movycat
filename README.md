@@ -11,7 +11,7 @@ Usage:
 movycat -file <filename> [-width <width> -height <height>]
 ```
 
-- Press `ESC` to quit playback anytime.
+- Press `ESC` to quit.
 
 - Press `SPACE` to pause.
 
@@ -22,7 +22,7 @@ movycat -file <filename> [-width <width> -height <height>]
 - Of course you can use vim keys instead of the cursor keys!  
   `l` to skip forwards, and `h` to skip backwards 5 seconds.
 
-- Press `i` to toggle the info overlay
+- Press `i` to toggle the info overlay.
 
 https://github.com/user-attachments/assets/e01ab36e-25d4-4228-bf79-36196637f125
 
