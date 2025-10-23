@@ -64,7 +64,20 @@ Real terminal hackers do everything in the terminal. This includes watching vide
   - SDL2
   - Zig 0.14.0 or newer
 
-For example on Ubuntu, run:
+### Tested Platforms
+
+**movycat** has been tested and confirmed working on:
+- **macOS 15.5** with FFmpeg 8.0 (via Homebrew)
+- **Ubuntu 25.10** with FFmpeg 7.1.1 (via apt)
+
+### Installation
+
+**On macOS:**
+```bash
+brew install ffmpeg sdl2
+```
+
+**On Ubuntu:**
 ```bash
 sudo apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libswresample-dev libsdl2-dev
 ```
