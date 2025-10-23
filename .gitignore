@@ -2,3 +2,6 @@
 zig-out/
 *.o
 movycat_assets/
+CLAUDE.md
+.gitignore
+
