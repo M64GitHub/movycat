@@ -2,9 +2,9 @@
 
 # movycat
 
-**movycat** plays videos directly in your terminal. It renders the video to ANSI half block characters in full RGB, using the [movy](https://github.com/M64GitHub/movy) rendering engine, and supports synced audio playback using SDL2.
+**movycat** plays videos directly in your terminal — in full RGB color. It renders frames as ANSI half block characters, using the [movy](https://github.com/M64GitHub/movy) rendering engine, with synced audio playback powered by SDL2.
 
-It supports all formats that ffmpeg can decode — including `.mp4`, `.h264`, `.avi`, `.mkv`, `.webm`, and more.  
+It supports all formats that **FFmpeg** can decode — including `.mp4`, `.h264`, `.avi`, `.mkv`, `.webm`, and more.  
 
 ```
 Usage:
@@ -46,14 +46,15 @@ Options:
 
 https://github.com/user-attachments/assets/e01ab36e-25d4-4228-bf79-36196637f125
 
-(part of the 64k Demo "Universal Sequence" from the amazing demo group "Conspiracy")
+(Excerpt from the 64k Demo "Universal Sequence" from the amazing demo group "Conspiracy")
 
 ![image](https://github.com/user-attachments/assets/f03fadeb-8812-4bb5-9aca-c94bcd1cdb84)
 
 ![image](https://github.com/user-attachments/assets/fcfcb9a5-1b3a-43dc-8c30-15574aeda9fb)
 
-## Why on earth ... ?
-Real terminal hackers do everything in the terminal. This includes watching videos. Besides that, this is just a demo for movy. movy basically provides rgba rendersurfaces, ways to manipulate and combine them, apply effects, and functions to blast them to the terminal. You can render anything on those, so why not video-frames?
+## Why movycat?
+**movycat** is both a demo and a showcase of what [movy](https://github.com/M64GitHub/movy) can do: an RGBA-based rendering engine for composing, transforming, and displaying visuals with real-time effects.
+If movy can render anything to a surface, why not video frames?
 
 ## ZIG
 **movycat** is entirely written in Zig. This offers us to seamlessly import libffmpeg. And libsdl2. And call it directly from the code.
