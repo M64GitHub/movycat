@@ -5,13 +5,13 @@
     .minimum_zig_version = "0.14.0",
 
     .dependencies = .{
-        .movy = .{
-            .path = "../movy",
-        },
-
         .flagz = .{
             .url = "https://github.com/M64GitHub/flagZ/archive/refs/tags/v1.0.0.tar.gz",
             .hash = "flagz-1.0.0-vdU1bCRQAQD3QOyKf6gAVpJuhTnlOoA10UmxO_XTycHm",
+        },
+        .movy = .{
+            .url = "https://github.com/M64GitHub/movy/archive/refs/tags/v0.0.0-alpha.tar.gz",
+            .hash = "movy-0.0.0-UtRV61eXCwBRgvwJwJUXxYpNTuxp01w06qnK08Z23uju",
         },
     },
     .paths = .{

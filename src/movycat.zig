@@ -195,7 +195,7 @@ pub fn main() !void {
                         const t_after = std.time.nanoTimestamp();
                         const render_ns = t_after - t_before;
 
-                        if (render_ns > 20_000_000) {
+                        if (render_ns > 40_000_000) {
                             movy.terminal.setColor(movy.color.WHITE);
                             std.debug.print(
                                 "Scaling / rendering frame took {} ns\n",
