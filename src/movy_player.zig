@@ -219,7 +219,7 @@ fn seekAndWarmupToFrame(
             last_err = e;
         }
 
-        std.time.sleep(200_000);
+        std.Thread.sleep(200_000);
     }
 
     return last_err orelse error.SeekFailed;

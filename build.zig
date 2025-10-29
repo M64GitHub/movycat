@@ -16,17 +16,21 @@ pub fn build(b: *std.Build) void {
 
     const name = "movycat";
 
-    const movycat_exe = b.addExecutable(.{
-        .name = name,
+    const movycat_mod = b.addModule(name, .{
         .root_source_file = b.path("src/movycat.zig"),
         .target = target,
         .optimize = optimize,
     });
-    movycat_exe.addIncludePath(.{ .cwd_relative = usr_include_path });
-    movycat_exe.root_module.addImport("movy", mod_movy);
-    movycat_exe.root_module.addImport("movy_video", mod_movy_video);
-    movycat_exe.root_module.addImport("flagz", mod_flagz);
-    movycat_exe.linkSystemLibrary("SDL2");
+    movycat_mod.addIncludePath(.{ .cwd_relative = usr_include_path });
+    movycat_mod.addImport("movy", mod_movy);
+    movycat_mod.addImport("movy_video", mod_movy_video);
+    movycat_mod.addImport("flagz", mod_flagz);
+    movycat_mod.linkSystemLibrary("SDL2", .{});
+
+    const movycat_exe = b.addExecutable(.{
+        .name = name,
+        .root_module = movycat_mod,
+    });
     b.installArtifact(movycat_exe);
 
     // Add run step

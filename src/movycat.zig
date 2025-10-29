@@ -11,8 +11,6 @@ const SDL = @cImport({
 
 pub const movycat_logo_png: []const u8 = @embedFile("movycat_64.png");
 
-const stdout = std.io.getStdOut().writer();
-
 var target_width: usize = undefined;
 var target_height: usize = undefined;
 
@@ -118,7 +116,7 @@ pub fn main() !void {
     surface.x = 0;
     surface.y = 0;
 
-    try screen.addRenderSurface(surface);
+    try screen.addRenderSurface(allocator, surface);
 
     var reached_end = false;
     var loop_ctr: usize = 0;
@@ -172,7 +170,7 @@ pub fn main() !void {
         }
 
         if (controller.isPaused()) {
-            std.time.sleep(10_000_000);
+            std.Thread.sleep(10_000_000);
             continue;
         }
 
@@ -217,7 +215,7 @@ pub fn main() !void {
                     _ = decoder.video.popFrame();
                 } else {
                     // Too early ->  just wait a bit
-                    std.time.sleep(500_000);
+                    std.Thread.sleep(500_000);
                 }
             }
         }
@@ -240,7 +238,7 @@ pub fn main() !void {
             controller.stop();
         }
 
-        std.time.sleep(1_000); // bit of breathing space for the cpu
+        std.Thread.sleep(1_000); // bit of breathing space for the cpu
     }
 
     if (args.a) movy.terminal.endAlternateScreen();
@@ -319,6 +317,10 @@ pub fn printUsage(allocator: std.mem.Allocator) !void {
     try surface.print();
 
     movy.terminal.resetColor();
+
+    var stdout_buffer: [1024]u8 = undefined;
+    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+    const stdout = &stdout_writer.interface;
 
     try stdout.print(
         \\Usage:
