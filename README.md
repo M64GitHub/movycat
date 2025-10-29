@@ -68,7 +68,7 @@ If movy can render anything to a surface, why not video frames?
 
   - FFmpeg (shared libraries)
   - SDL2
-  - Zig 0.14.0 or newer
+  - Zig 0.15.2 or newer
 
 ### Tested Platforms
 
