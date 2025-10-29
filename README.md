@@ -1,3 +1,8 @@
+
+![License](https://img.shields.io/badge/License-MIT-85adf2?style=flat)
+![Version](https://img.shields.io/badge/Version-0.0.2-85adf2?style=flat)
+![Zig](https://img.shields.io/badge/Zig-0.15.2-orange?style=flat)
+
 ![get_movycat5](https://github.com/user-attachments/assets/d07e6ecd-2ee4-41f2-a82c-66096de14aed)
 
 # movycat
