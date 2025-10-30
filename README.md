@@ -54,8 +54,10 @@ https://github.com/user-attachments/assets/e01ab36e-25d4-4228-bf79-36196637f125
 (Excerpt from the 64k Demo "Universal Sequence" from the amazing demo group "Conspiracy")
 
 ![image](https://github.com/user-attachments/assets/f03fadeb-8812-4bb5-9aca-c94bcd1cdb84)
+(Screenshot from the Demo "Clean Slate" from the amazing demo group "Conspiracy")
 
 ![image](https://github.com/user-attachments/assets/fcfcb9a5-1b3a-43dc-8c30-15574aeda9fb)
+(Screenshot from the Demo "Offscreen Colonies" from the amazing demo group "Conspiracy")
 
 ## Why movycat?
 **movycat** is both a demo and a showcase of what [movy](https://github.com/M64GitHub/movy) can do: an RGBA-based rendering engine for composing, transforming, and displaying visuals with real-time effects.
