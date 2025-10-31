@@ -102,4 +102,4 @@ MIT
 
 ---
 
-Built with <3 and **Zig** and **movy**.
+Built with `<3` and **Zig** and **movy**.
