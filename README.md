@@ -95,3 +95,11 @@ sudo apt install libavformat-dev libavcodec-dev libavutil-dev libswscale-dev lib
 ```bash
 zig build -Drelease-fast
 ```
+
+## License
+
+MIT  
+
+---
+
+Built with <3 and **Zig** and **movy**.
