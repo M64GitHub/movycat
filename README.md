@@ -60,7 +60,7 @@ https://github.com/user-attachments/assets/e01ab36e-25d4-4228-bf79-36196637f125
 (Screenshot from the Demo "Offscreen Colonies" from the amazing demo group "Conspiracy")
 
 ## Why movycat?
-**movycat** is both a demo and a showcase of what [movy](https://github.com/M64GitHub/movy) can do: an RGBA-based rendering engine for composing, transforming, and displaying visuals with real-time effects.
+**movycat** is both a demo and a showcase of what [movy](https://github.com/M64GitHub/movy) can do: a RGBA-based rendering engine for composing, transforming, and displaying visuals with real-time effects.
 If movy can render anything to a surface, why not video frames?
 
 ## ZIG
