@@ -7,9 +7,9 @@
 
 # movycat
 
-**movycat** plays videos directly in your terminal — in full RGB color. It renders frames as ANSI half block characters, using the [movy](https://github.com/M64GitHub/movy) rendering engine, with synced audio playback powered by SDL2.
+**movycat** plays videos directly in your terminal - in full RGB color. It renders frames as ANSI half block characters, using the [movy](https://github.com/M64GitHub/movy) rendering engine, with synced audio playback powered by SDL2.
 
-It supports all formats that **FFmpeg** can decode — including `.mp4`, `.h264`, `.avi`, `.mkv`, `.webm`, and more.  
+It supports all formats that **FFmpeg** can decode - including `.mp4`, `.h264`, `.avi`, `.mkv`, `.webm`, and more.  
 
 ```
 Usage:
